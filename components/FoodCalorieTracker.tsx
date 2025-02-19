@@ -48,26 +48,6 @@ export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) 
     }
   }
 
-  const handleProceed = async () => {
-    const storedUser = localStorage.getItem("user")
-    let email = ""
-    if (storedUser) {
-      email = JSON.parse(storedUser).email
-    }
-    // Call API to update target calories in user's profile
-    await fetch("/api/dashboard", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        type: "profile", 
-        email, 
-        profileData: { dailyCalories: Number(localCalorie) } 
-      }),
-    })
-    // Navigate to Tools page with Exercise Calculator active (pass query parameter)
-    router.push("/tools?activeTool=Exercise Calculator")
-  }
-
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold mb-4 flex items-center text-black dark:text-white">
@@ -178,24 +158,6 @@ export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) 
           {calorieAmount.toFixed(2)}
         </motion.p>
       </div>
-
-      <input
-        type="number"
-        value={localCalorie}
-        onChange={(e) => {
-          setLocalCalorie(e.target.value)
-          setCalorieAmount(Number(e.target.value))
-        }}
-        placeholder="Enter daily target calories"
-        className="p-2 border rounded"
-      />
-      {/* New button to proceed */}
-      <button 
-        onClick={handleProceed} 
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-      >
-        Proceed to Exercise Calculator
-      </button>
     </div>
   )
 }
