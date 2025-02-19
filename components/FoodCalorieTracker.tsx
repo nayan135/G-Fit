@@ -23,8 +23,17 @@ export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) 
   const [amount, setAmount] = useState("")
 
   useEffect(() => {
+    // Initialize total calories from localStorage on mount
+    const storedTotal = localStorage.getItem("totalCalories")
+    if (storedTotal) {
+      setCalorieAmount(Number(storedTotal))
+    }
+  }, [])
+
+  useEffect(() => {
     const totalCalories = selectedFoods.reduce((sum, food) => sum + food.calories, 0)
     setCalorieAmount(totalCalories)
+    localStorage.setItem("totalCalories", totalCalories.toString())
   }, [selectedFoods, setCalorieAmount])
 
   const addSelectedFood = () => {
@@ -47,6 +56,27 @@ export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) 
       setCustomFood({ name: "", caloriesPer100g: "" })
     }
   }
+
+  // New effect: update total calories to database every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const storedUser = localStorage.getItem("user")
+      let email = ""
+      if (storedUser) {
+        email = JSON.parse(storedUser).email
+      }
+      await fetch("/api/dashboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          type: "profile", 
+          email, 
+          profileData: { dailyCalories: Number(calorieAmount) }
+        }),
+      })
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [calorieAmount])
 
   return (
     <div className="space-y-6">

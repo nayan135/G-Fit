@@ -22,6 +22,19 @@ export default function Tools() {
 
   useEffect(() => {
     setMounted(true)
+    // New effect: fetch target calories from database on every load
+    const storedUser = localStorage.getItem("user")
+    if (storedUser) {
+      const email = JSON.parse(storedUser).email
+      fetch(`/api/dashboard?email=${email}`)
+        .then(res => res.json())
+        .then(data => {
+          if(data.profile && data.profile.dailyCalories) {
+            setCalorieAmount(data.profile.dailyCalories)
+          }
+        })
+        .catch(err => console.error("Error fetching target calories:", err))
+    }
   }, [])
 
   if (!mounted) {
