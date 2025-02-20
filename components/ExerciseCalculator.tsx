@@ -27,6 +27,11 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount }) 
   const [exerciseResults, setExerciseResults] = useState([])
   const [intensity, setIntensity] = useState("moderate")
 
+  // New state for workout timing
+  const [workoutStarted, setWorkoutStarted] = useState(false)
+  const [startTime, setStartTime] = useState<number | null>(null)
+  const [elapsed, setElapsed] = useState(0)
+
   const setIntensityAndRecalculate = (newIntensity) => {
     setIntensity(newIntensity)
     calculateExercises(newIntensity)
@@ -37,6 +42,16 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount }) 
       calculateExercises()
     }
   }, [calorieAmount, selectedExercises])
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+    if (workoutStarted && startTime) {
+      timer = setInterval(() => {
+        setElapsed(Date.now() - startTime)
+      }, 1000)
+    }
+    return () => clearInterval(timer)
+  }, [workoutStarted, startTime])
 
   const toggleExercise = (exercise) => {
     setSelectedExercises((prev) =>
@@ -73,6 +88,33 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount }) 
     })
 
     setExerciseResults(results)
+  }
+
+  const handleStartWorkout = () => {
+    setWorkoutStarted(true)
+    setStartTime(Date.now())
+    setElapsed(0)
+  }
+
+  const handleCompleteWorkout = async () => {
+    setWorkoutStarted(false)
+    const durationSeconds = Math.floor(elapsed / 1000)
+    const recentExercise = `Exercise completed in ${durationSeconds} seconds`
+    const storedUser = localStorage.getItem("user")
+    let email = ""
+    if (storedUser) {
+      email = JSON.parse(storedUser).email
+    }
+    await fetch("/api/dashboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "profile",
+        email,
+        profileData: { recentWorkout: recentExercise },
+      }),
+    })
+    alert("Workout recorded: " + recentExercise)
   }
 
   return (
@@ -170,6 +212,19 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount }) 
           </div>
         </div>
       </div>
+
+      {!workoutStarted ? (
+        <button onClick={handleStartWorkout} className="bg-blue-500 text-white px-4 py-2 rounded-md">
+          Start Workout
+        </button>
+      ) : (
+        <div>
+          <p>Workout in progress: {Math.floor(elapsed / 1000)} seconds elapsed.</p>
+          <button onClick={handleCompleteWorkout} className="bg-green-500 text-white px-4 py-2 rounded-md">
+            Complete Workout
+          </button>
+        </div>
+      )}
     </div>
   )
 }

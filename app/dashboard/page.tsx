@@ -10,14 +10,15 @@ export default function Dashboard() {
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
   const [isEditing, setIsEditing] = useState(false)
+  const [isLoadingData, setIsLoadingData] = useState(true)
   const [userData, setUserData] = useState({
-    email: "johndoe@example.com", // DB reference – will be replaced by logged‐in user's email
-    username: "JohnDoe",
+    email: "",
+    username: "",
     bio: "Fitness enthusiast and software developer",
-    github: "johndoe",
-    twitter: "johndoe",
-    instagram: "johndoe",
-    linkedin: "johndoe",
+    github: "",
+    twitter: "",
+    instagram: "",
+    linkedin: "",
     profilePic: "/placeholder.svg?height=200&width=200",
     progress: 75,
     dailyCalories: 2500,
@@ -39,32 +40,73 @@ export default function Dashboard() {
       const parsedUser = JSON.parse(storedUser)
       setUserData(prev => ({ 
         ...prev, 
-        email: parsedUser.email, 
-        username: parsedUser.fullName || prev.username 
+        email: parsedUser.email,
+        username: parsedUser.fullName || prev.username,
+        github: parsedUser.github || prev.github,
+        twitter: parsedUser.twitter || prev.twitter,
+        instagram: parsedUser.instagram || prev.instagram,
+        linkedin: parsedUser.linkedin || prev.linkedin
       }))
     }
     setMounted(true)
-    
-    fetch(`/api/dashboard?email=${userData.email}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch dashboard data")
-        }
-        return res.json()
-      })
-      .then((data) => {
-        if (data.profile) {
-          setUserData((prev) => ({ ...prev, ...data.profile }))
-        }
-        // Optionally, store dailyRecords if you plan to display/edit them later.
-        // console.log("Daily Records:", data.dailyRecords)
-      })
-      .catch((err) => {
-        console.error("Error in fetching dashboard data:", err)
-      })
   }, [])
 
+  // New effect: When email is available, fetch the profile from db dynamically.
+  useEffect(() => {
+    if (userData.email) {
+      fetch(`/api/dashboard?email=${userData.email}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch dashboard data")
+          return res.json()
+        })
+        .then((data) => {
+          if (data.profile) {
+            setUserData(prev => ({ ...prev, ...data.profile }))
+          }
+          // Optionally, store dailyRecords if you plan to display/edit them later.
+          // console.log("Daily Records:", data.dailyRecords)
+        })
+        .catch((err) => {
+          console.error("Error in fetching dashboard data:", err)
+        })
+        .finally(() => {
+          setIsLoadingData(false)
+        })
+    }
+  }, [userData.email])
+
+  // New useEffect to poll the database periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch(`/api/dashboard?email=${userData.email}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch DB data")
+          return res.json()
+        })
+        .then((data) => {
+          if (data.profile) {
+            setUserData(prev => ({
+              ...prev,
+              progress: data.profile.progress,
+              dailyCalories: data.profile.dailyCalories,
+              caloriesBurned: data.profile.caloriesBurned,
+              recentWorkout: data.profile.recentWorkout,
+            }))
+          }
+        })
+        .catch((err) => console.error("Polling fetch error:", err))
+    }, 10000)
+    return () => clearInterval(interval)
+  }, [userData.email])
+
   if (!mounted) return null
+  if (isLoadingData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl font-semibold">Loading...</div>
+      </div>
+    )
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -329,7 +371,17 @@ export default function Dashboard() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Target Calories</p>
-                  <p className="text-2xl font-bold">{userData.dailyCalories}</p>
+                  {isEditing ? (
+                    <input
+                      type="number"
+                      name="dailyCalories"
+                      value={userData.dailyCalories}
+                      onChange={handleInputChange}
+                      className="text-2xl font-bold bg-transparent border-b border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500"
+                    />
+                  ) : (
+                    <p className="text-2xl font-bold">{userData.dailyCalories}</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Calories Burned</p>
@@ -362,62 +414,7 @@ export default function Dashboard() {
           </motion.div>
         </div>
 
-        {/* New Daily Data Form Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.7 }}
-          className="mt-8 bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md"
-        >
-          <h3 className="text-xl font-semibold mb-4">Update Today's Data</h3>
-          <form onSubmit={handleDailySubmit} className="space-y-4">
-            <div>
-              <label htmlFor="record-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Date
-              </label>
-              <input
-                type="date"
-                id="record-date"
-                value={dailyRecord.date}
-                onChange={(e) => setDailyRecord({ ...dailyRecord, date: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg bg-white dark:bg-[#2a2a2a] border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-              />
-            </div>
-            <div>
-              <label htmlFor="record-dailyCalories" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Target Daily Calories
-              </label>
-              <input
-                type="number"
-                id="record-dailyCalories"
-                placeholder="Enter target calories"
-                value={dailyRecord.dailyCalories}
-                onChange={(e) => setDailyRecord({ ...dailyRecord, dailyCalories: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg bg-white dark:bg-[#2a2a2a] border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-              />
-            </div>
-            <div>
-              <label htmlFor="record-caloriesBurned" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Calories Burned Today
-              </label>
-              <input
-                type="number"
-                id="record-caloriesBurned"
-                placeholder="Enter calories burned"
-                value={dailyRecord.caloriesBurned}
-                onChange={(e) => setDailyRecord({ ...dailyRecord, caloriesBurned: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg bg-white dark:bg-[#2a2a2a] border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg transition-colors font-medium hover:bg-blue-600"
-            >
-              Update Today's Data
-            </button>
-          </form>
-        </motion.div>
-
+        {/* Removed "Update Today's Data" section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

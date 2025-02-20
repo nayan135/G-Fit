@@ -34,9 +34,20 @@ export async function POST(request: Request) {
       await db.collection("users").updateOne({ email }, { $set: profileData }, { upsert: true })
       return NextResponse.json({ message: "Profile updated successfully" })
     } else if (type === "daily") {
-      // Insert daily record for the user
-      await db.collection("dailyRecords").insertOne({ email, ...dailyRecord })
-      return NextResponse.json({ message: "Daily record added successfully" })
+      // New logic: if today's daily record exists for the user, update it by adding calories; otherwise, insert a new record.
+      const existingRecord = await db.collection("dailyRecords").findOne({ email, date: dailyRecord.date })
+      if (existingRecord) {
+        // Increment the dailyCalories field with the new calories
+        await db.collection("dailyRecords").updateOne(
+          { email, date: dailyRecord.date },
+          { $inc: { dailyCalories: Number(dailyRecord.dailyCalories) } }
+        )
+        return NextResponse.json({ message: "Daily record updated successfully" })
+      } else {
+        // Insert a new daily record for the day
+        await db.collection("dailyRecords").insertOne({ email, ...dailyRecord })
+        return NextResponse.json({ message: "Daily record added successfully" })
+      }
     } else {
       return NextResponse.json({ message: "Invalid type" }, { status: 400 })
     }

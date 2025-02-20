@@ -30,23 +30,28 @@ export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) 
     }
   }, [])
 
-  useEffect(() => {
-    const totalCalories = selectedFoods.reduce((sum, food) => sum + food.calories, 0)
-    setCalorieAmount(totalCalories)
-    localStorage.setItem("totalCalories", totalCalories.toString())
-  }, [selectedFoods, setCalorieAmount])
-
   const addSelectedFood = () => {
     if (selectedFood && amount) {
       const calories = (selectedFood.caloriesPer100g * Number.parseFloat(amount)) / 100
       setSelectedFoods([...selectedFoods, { ...selectedFood, amount: Number.parseFloat(amount), calories }])
+      setCalorieAmount(prev => {
+        const newTotal = prev + calories
+        localStorage.setItem("totalCalories", newTotal.toString())
+        return newTotal
+      })
       setSelectedFood(null)
       setAmount("")
     }
   }
 
   const removeSelectedFood = (index) => {
+    const removedFood = selectedFoods[index]
     setSelectedFoods(selectedFoods.filter((_, i) => i !== index))
+    setCalorieAmount(prev => {
+      const newTotal = prev - removedFood.calories
+      localStorage.setItem("totalCalories", newTotal.toString())
+      return newTotal
+    })
   }
 
   const addCustomFood = () => {
