@@ -22,19 +22,29 @@ export default function Login() {
     const body = isLogin
       ? { action, email, password }
       : { action, email, password, fullName, fitnessLevel, age, gender, phone, fitnessGoal }
-    const res = await fetch("/api/auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    })
-    const data = await res.json()
-    if (isLogin && data.message === "Login successful") {
-      // Store session token and user info
-      localStorage.setItem("user", JSON.stringify({ token: data.token, email, fullName: data.user.fullName }))
-      alert("Login successful!")
-      router.push("/")
-    } else {
-      alert(data.message)
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      })
+      if (!res.ok) {
+        // Log response error info for debugging
+        const errorData = await res.json()
+        throw new Error(errorData.message || "Failed to fetch")
+      }
+      const data = await res.json()
+      if (isLogin && data.message === "Login successful") {
+        // Store session token and user info
+        localStorage.setItem("user", JSON.stringify({ token: data.token, email, fullName: data.user.fullName }))
+        alert("Login successful!")
+        router.push("/")
+      } else {
+        alert(data.message)
+      }
+    } catch (error: any) {
+      console.error("Error during login:", error)
+      alert("Error: " + error.message)
     }
   }
 

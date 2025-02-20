@@ -30,8 +30,12 @@ export async function POST(request: Request) {
     const client = await clientPromise
     const db = client.db("GFIT")
     if (type === "profile") {
-      // Update or insert profile data
-      await db.collection("users").updateOne({ email }, { $set: profileData }, { upsert: true })
+      // Update or insert profile data (including profilePic)
+      await db.collection("users").updateOne(
+        { email },
+        { $set: profileData }, // profileData can include profilePic as a Base64 string or a URL
+        { upsert: true }
+      )
       return NextResponse.json({ message: "Profile updated successfully" })
     } else if (type === "daily") {
       // New logic: if today's daily record exists for the user, update it by adding calories; otherwise, insert a new record.

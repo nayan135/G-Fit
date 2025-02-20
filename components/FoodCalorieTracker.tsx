@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 import { X, Plus, Utensils } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-const commonFoods = [
+const defaultFoods = [
   { name: "Sandwich", caloriesPer100g: 250 },
   { name: "Apple", caloriesPer100g: 52 },
   { name: "Banana", caloriesPer100g: 89 },
@@ -16,7 +16,7 @@ const commonFoods = [
 export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) {
   const router = useRouter()
   const [localCalorie, setLocalCalorie] = useState(calorieAmount)
-  const [foods, setFoods] = useState(commonFoods)
+  const [foods, setFoods] = useState(defaultFoods)
   const [selectedFoods, setSelectedFoods] = useState([])
   const [customFood, setCustomFood] = useState({ name: "", caloriesPer100g: "" })
   const [selectedFood, setSelectedFood] = useState(null)
@@ -28,6 +28,21 @@ export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) 
     if (storedTotal) {
       setCalorieAmount(Number(storedTotal))
     }
+  }, [])
+
+  useEffect(() => {
+    async function fetchFoods() {
+      try {
+        const res = await fetch("/api/foods")
+        if (!res.ok) throw new Error("Failed to fetch foods")
+        const data = await res.json()
+        // Assume API returns an object like { foods: [...] }
+        setFoods(data.foods)
+      } catch (err) {
+        console.error("Error fetching foods:", err)
+      }
+    }
+    fetchFoods()
   }, [])
 
   const addSelectedFood = () => {
@@ -54,11 +69,22 @@ export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) 
     })
   }
 
-  const addCustomFood = () => {
+  const addCustomFood = async () => {
     if (customFood.name && customFood.caloriesPer100g) {
-      const newFood = { ...customFood, caloriesPer100g: Number.parseInt(customFood.caloriesPer100g, 10) }
-      setFoods([...foods, newFood])
-      setCustomFood({ name: "", caloriesPer100g: "" })
+      try {
+        const newFood = { ...customFood, caloriesPer100g: Number.parseInt(customFood.caloriesPer100g, 10) }
+        const res = await fetch("/api/foods", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newFood)
+        })
+        if (!res.ok) throw new Error("Failed to add custom food")
+        // Append the new food to the list displayed
+        setFoods([...foods, newFood])
+        setCustomFood({ name: "", caloriesPer100g: "" })
+      } catch (err) {
+        console.error("Error adding custom food:", err)
+      }
     }
   }
 
