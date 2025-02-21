@@ -78,26 +78,28 @@ export default function Dashboard() {
   // New useEffect to poll the database periodically
   useEffect(() => {
     const interval = setInterval(() => {
-      fetch(`/api/dashboard?email=${userData.email}`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Failed to fetch DB data")
-          return res.json()
-        })
-        .then((data) => {
-          if (data.profile) {
-            setUserData(prev => ({
-              ...prev,
-              progress: data.profile.progress,
-              dailyCalories: data.profile.dailyCalories,
-              caloriesBurned: data.profile.caloriesBurned,
-              recentWorkout: data.profile.recentWorkout,
-            }))
-          }
-        })
-        .catch((err) => console.error("Polling fetch error:", err))
+      if (userData.email) {
+        fetch(`/api/dashboard?email=${userData.email}`)
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to fetch DB data")
+            return res.json()
+          })
+          .then((data) => {
+            if (data.profile) {
+              setUserData(prev => ({
+                ...prev,
+                progress: data.profile.progress,
+                dailyCalories: data.profile.dailyCalories,
+                caloriesBurned: data.profile.caloriesBurned,
+                recentWorkout: data.profile.recentWorkout,
+              }))
+            }
+          })
+          .catch((err) => console.error("Polling fetch error:", err))
+      }
     }, 10000)
     return () => clearInterval(interval)
-  }, [userData.email])
+  }, [])
 
   if (!mounted) return null
   if (isLoadingData) {

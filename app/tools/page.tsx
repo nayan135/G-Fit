@@ -22,6 +22,7 @@ export default function Tools() {
   const [progress, setProgress] = useState(75)
   const [caloriesBurned, setCaloriesBurned] = useState(500)
   const [recentWorkout, setRecentWorkout] = useState("")
+  const [userWeight, setUserWeight] = useState("") // new state for weight
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -30,6 +31,11 @@ export default function Tools() {
     const storedUser = localStorage.getItem("user")
     if (!storedUser) {
       router.push("/login")
+    } else {
+      const user = JSON.parse(storedUser)
+      if (user.weight) {
+        setUserWeight(user.weight)
+      }
     }
   }, [router])
 
@@ -79,23 +85,25 @@ export default function Tools() {
       if (storedUser) {
         email = JSON.parse(storedUser).email
       }
-      await fetch("/api/dashboard", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "profile",
-          email,
-          profileData: {
-            progress,
-            dailyCalories: calorieAmount,
-            caloriesBurned,
-            recentWorkout,
-          },
-        }),
-      })
+      if (email) { // Only update if user is logged in
+        await fetch("/api/dashboard", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "profile",
+            email,
+            profileData: {
+              progress,
+              dailyCalories: calorieAmount,
+              caloriesBurned,
+              recentWorkout,
+            },
+          }),
+        })
+      }
     }, 10000)
     return () => clearInterval(interval)
-  }, [progress, calorieAmount, caloriesBurned, recentWorkout])
+  }, []) // Use an empty dependency array so the effect runs continuously
 
   if (!mounted) {
     return null
@@ -104,6 +112,12 @@ export default function Tools() {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white p-4 sm:p-8 transition-colors duration-200">
       <div className="max-w-4xl mx-auto">
+        {/* New display for user weight */}
+        {userWeight && (
+          <div className="mb-4 text-center text-lg font-medium">
+            Your Weight: {userWeight} kg
+          </div>
+        )}
         <div className="flex justify-between items-center mb-8">
           <div className="inline-flex p-1 bg-gray-200 dark:bg-gray-800 rounded-full shadow-md">
             {tools.map((tool) => (

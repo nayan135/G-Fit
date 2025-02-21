@@ -15,13 +15,14 @@ export default function Login() {
   const [gender, setGender] = useState("")
   const [phone, setPhone] = useState("")
   const [fitnessGoal, setFitnessGoal] = useState("")
+  const [weight, setWeight] = useState("") // New state for weight
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const action = isLogin ? "login" : "signup"
     const body = isLogin
       ? { action, email, password }
-      : { action, email, password, fullName, fitnessLevel, age, gender, phone, fitnessGoal }
+      : { action, email, password, fullName, fitnessLevel, age, gender, phone, fitnessGoal, weight } // include weight
     try {
       const res = await fetch("/api/auth", {
         method: "POST",
@@ -35,8 +36,8 @@ export default function Login() {
       }
       const data = await res.json()
       if (isLogin && data.message === "Login successful") {
-        // Store session token and user info
-        localStorage.setItem("user", JSON.stringify({ token: data.token, email, fullName: data.user.fullName }))
+        // Store session token and user info, including weight
+        localStorage.setItem("user", JSON.stringify({ token: data.token, email, fullName: data.user.fullName, weight: data.user.weight }))
         alert("Login successful!")
         router.push("/")
       } else {
@@ -152,6 +153,19 @@ export default function Login() {
                   placeholder="e.g., weight loss, muscle gain"
                   value={fitnessGoal}
                   onChange={(e) => setFitnessGoal(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg bg-white dark:bg-[#2a2a2a] border border-gray-300 dark:border-gray-600 text-black dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
+                />
+              </div>
+              <div>
+                <label htmlFor="weight" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Weight (kg)
+                </label>
+                <input
+                  type="number"
+                  id="weight"
+                  placeholder="Enter your weight in kg"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
                   className="w-full px-4 py-2 rounded-lg bg-white dark:bg-[#2a2a2a] border border-gray-300 dark:border-gray-600 text-black dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
                 />
               </div>
