@@ -18,8 +18,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const { name, caloriesPer100g, user } = await request.json()
-    // Use a default value if user is null or undefined
-    const uploadedBy = user ? user : "unknown"
+    // Extract email from the user object if present
+    const uploadedBy = user && user.email ? user.email : "unknown"
     if (!name || !caloriesPer100g) {
       return NextResponse.json({ message: "Missing fields" }, { status: 400 })
     }
