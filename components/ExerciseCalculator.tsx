@@ -85,14 +85,10 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount }) 
   // Calculate calories burned for a specific exercise
   const calculateCaloriesBurned = useCallback(
     (exercise, durationInMinutes) => {
-      // Formula: Calories = MET × Weight (kg) × Duration (hours)
-      // Convert duration to hours
+    
       const durationInHours = durationInMinutes / 60
-      // Get intensity multiplier
       const intensityMult = exercise.intensityMultiplier[intensity]
-      // Calculate base calories
       const baseCalories = exercise.met * weight * durationInHours
-      // Apply intensity multiplier
       return baseCalories * intensityMult
     },
     [intensity, weight],

@@ -54,7 +54,13 @@ export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount
       timer = setInterval(() => {
         const elapsed = Date.now() - startTime
         setElapsedTime(elapsed)
-        // Calculate calories burned in real-time based on current exercise
+        // Formula derivation:
+        // 1. Convert exercise duration (minutes) to hours:
+        //      durationInHours = durationInMinutes / 60
+        // 2. Calculate base calories burned using the MET value:
+        //      baseCalories = MET × weight (kg) × durationInHours
+        // 3. Adjust for workout intensity using the multiplier:
+        //      caloriesBurned = baseCalories × intensityMultiplier
         if (workoutPlan) {
           const currentSectionExercises = workoutPlan.sections[currentSection].exercises
           const exercise = currentSectionExercises[currentExerciseIndex]

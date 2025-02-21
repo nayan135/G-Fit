@@ -127,7 +127,7 @@ export default function Home() {
           </p>
           <motion.button
             whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.95 }} 
             className="px-8 py-3 bg-black text-white dark:bg-white dark:text-black rounded-full font-medium inline-flex items-center group"
           >
             Get Started
