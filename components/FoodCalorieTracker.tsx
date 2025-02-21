@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { X, Plus, Utensils } from "lucide-react"
 import { useRouter } from "next/navigation"
 
+// Add defaultFoods definition before usage
 const defaultFoods = [
   { name: "Sandwich", caloriesPer100g: 250 },
   { name: "Apple", caloriesPer100g: 52 },
@@ -23,7 +24,6 @@ export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) 
   const [amount, setAmount] = useState("")
 
   useEffect(() => {
-    // Initialize total calories from localStorage on mount
     const storedTotal = localStorage.getItem("totalCalories")
     if (storedTotal) {
       setCalorieAmount(Number(storedTotal))
@@ -72,15 +72,20 @@ export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) 
   const addCustomFood = async () => {
     if (customFood.name && customFood.caloriesPer100g) {
       try {
-        const newFood = { ...customFood, caloriesPer100g: Number.parseInt(customFood.caloriesPer100g, 10) }
+        const newFoodData = {
+          name: customFood.name,
+          caloriesPer100g: Number(customFood.caloriesPer100g)
+        }
         const res = await fetch("/api/foods", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newFood)
+          body: JSON.stringify(newFoodData)
         })
         if (!res.ok) throw new Error("Failed to add custom food")
-        // Append the new food to the list displayed
-        setFoods([...foods, newFood])
+        const result = await res.json()
+        // If API returns the newly created food in result.food, use it; otherwise fallback
+        const addedFood = result.food ? result.food : newFoodData
+        setFoods(prevFoods => [...prevFoods, addedFood])
         setCustomFood({ name: "", caloriesPer100g: "" })
       } catch (err) {
         console.error("Error adding custom food:", err)
