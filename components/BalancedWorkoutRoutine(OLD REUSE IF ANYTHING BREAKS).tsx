@@ -7,18 +7,18 @@ import { Activity, Dumbbell, Heart, Play, Square, Timer } from "lucide-react"
 const exercises = [
   {
     name: "Push-ups",
-    caloriesPerMinute: { low: 7, moderate: 8.5, high: 10 },
+    caloriesPerMinute: { low: 4, moderate: 7, high: 10 },
     icon: "💪",
     type: "reps",
     repsPerMinute: 20,
   },
-  { name: "Squats", caloriesPerMinute: { low: 8, moderate: 10, high: 12 }, icon: "🦵", type: "reps", repsPerMinute: 15 },
-  { name: "Sit-ups", caloriesPerMinute: { low: 6, moderate: 7.5, high: 10 }, icon: "🔄", type: "reps", repsPerMinute: 20 },
-  { name: "Jumping Jacks", caloriesPerMinute: { low: 8, moderate: 10, high: 12 }, icon: "⭐", type: "duration" },
-  { name: "Running", caloriesPerMinute: { low: 11, moderate: 13.5, high: 16 }, icon: "🏃", type: "duration" },
-  { name: "Cycling", caloriesPerMinute: { low: 9, moderate: 11, high: 13 }, icon: "🚴", type: "duration" },
-  { name: "Swimming", caloriesPerMinute: { low: 10, moderate: 12, high: 14 }, icon: "🏊", type: "duration" },
-  { name: "Jump Rope", caloriesPerMinute: { low: 12, moderate: 14, high: 16 }, icon: "⚡", type: "duration" },
+  { name: "Squats", caloriesPerMinute: { low: 5, moderate: 8, high: 12 }, icon: "🦵", type: "reps", repsPerMinute: 15 },
+  { name: "Sit-ups", caloriesPerMinute: { low: 3, moderate: 6, high: 9 }, icon: "🔄", type: "reps", repsPerMinute: 20 },
+  { name: "Jumping Jacks", caloriesPerMinute: { low: 8, moderate: 12, high: 16 }, icon: "⭐", type: "duration" },
+  { name: "Running", caloriesPerMinute: { low: 10, moderate: 15, high: 20 }, icon: "🏃", type: "duration" },
+  { name: "Cycling", caloriesPerMinute: { low: 7, moderate: 11, high: 15 }, icon: "🚴", type: "duration" },
+  { name: "Swimming", caloriesPerMinute: { low: 9, moderate: 13, high: 17 }, icon: "🏊", type: "duration" },
+  { name: "Jump Rope", caloriesPerMinute: { low: 11, moderate: 15, high: 20 }, icon: "⚡", type: "duration" },
 ]
 
 const workoutTypes = {
