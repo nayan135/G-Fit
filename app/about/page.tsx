@@ -40,7 +40,7 @@ const developers = [
   },
   {
     name: "Rabin Chudali",
-    role: "UI Designer",
+    role: "I Designer",
     image: "https://iili.io/2yt9vbs.jpg",
     github: "https://github.com/TechnophileCracker",
     linkedin: "https://linkedin.com/in/rabin-chudali",
