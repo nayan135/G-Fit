@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
+import { signIn } from "next-auth/react"
 
 export default function Login() {
   const router = useRouter()
@@ -18,34 +19,51 @@ export default function Login() {
   const [weight, setWeight] = useState("") // New state for weight
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const action = isLogin ? "login" : "signup"
-    const body = isLogin
-      ? { action, email, password }
-      : { action, email, password, fullName, fitnessLevel, age, gender, phone, fitnessGoal, weight } // include weight
-    try {
-      const res = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      })
-      if (!res.ok) {
-        // Log response error info for debugging
-        const errorData = await res.json()
-        throw new Error(errorData.message || "Failed to fetch")
+    e.preventDefault();
+
+    if (!isLogin) {
+      // Validate required fields for signup
+      if (!fullName || !age || !gender || !phone || !fitnessGoal || !weight || !email || !password) {
+        alert("Please fill out all required fields before signing up.");
+        return;
       }
-      const data = await res.json()
-      if (isLogin && data.message === "Login successful") {
-        // Store session token and user info, including weight
-        localStorage.setItem("user", JSON.stringify({ token: data.token, email, fullName: data.user.fullName, weight: data.user.weight }))
-        alert("Login successful!")
-        router.push("/")
+    }
+    
+    if (isLogin) {
+      // Using NextAuth to sign in
+      const result = await signIn("credentials", { redirect: false, email, password });
+      if (result?.error) {
+        alert(result.error);
       } else {
-        alert(data.message)
+        // For simplicity, store the email and redirect
+        localStorage.setItem("user", JSON.stringify({ email }));
+        alert("Login successful!");
+        router.push("/");
       }
-    } catch (error: any) {
-      console.error("Error during login:", error)
-      alert("Error: " + error.message)
+    } else {
+      const action = "signup";
+      const body = { action, email, password, fullName, fitnessLevel, age, gender, phone, fitnessGoal, weight };
+      try {
+        const res = await fetch("/api/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Failed to fetch");
+        }
+        const data = await res.json();
+        if (data.message === "Signup successful") {
+          alert("Signup successful! Please log in with your credentials.");
+          setIsLogin(true);
+        } else {
+          alert(data.message);
+        }
+      } catch (error: any) {
+        console.error("Error during signup:", error);
+        alert("Error: " + error.message);
+      }
     }
   }
 

@@ -128,44 +128,33 @@ export default function StatsAndProgress({ userData, isEditing, handleInputChang
             </div>
             <h3 className="text-xl font-semibold">Recent Workout</h3>
           </div>
-        
         </div>
-        {isEditing ? (
-          <textarea
-            name="recentWorkout"
-            value={userData.recentWorkout}
-            onChange={handleInputChange}
-            className="w-full bg-white/5 rounded-lg p-4 min-h-[150px] resize-none focus:outline-none focus:ring-2 focus:ring-white/20"
-            placeholder="Describe your recent workout..."
-          />
-        ) : (
-          <div className="bg-white/5 p-4 rounded-lg">
-            {userData.recentWorkout && userData.recentWorkout.trim() !== "" ? (
-              (() => {
-                try {
-                  const workout = JSON.parse(userData.recentWorkout)
-                  return renderWorkoutDetails(workout)
-                } catch (error) {
-                  return (
-                    <div className="flex items-center justify-center h-32 text-white/60">
-                      <p className="flex items-center gap-2">
-                        <Dumbbell className="w-5 h-5" />
-                        Invalid workout data
-                      </p>
-                    </div>
-                  )
-                }
-              })()
-            ) : (
-              <div className="flex items-center justify-center h-32 text-white/60">
-                <p className="flex items-center gap-2">
-                  <Dumbbell className="w-5 h-5" />
-                  No recent workout recorded
-                </p>
-              </div>
-            )}
-          </div>
-        )}
+        <div className="bg-white/5 p-4 rounded-lg">
+          {userData.recentWorkout && userData.recentWorkout.trim() !== "" ? (
+            (() => {
+              try {
+                const workout = JSON.parse(userData.recentWorkout)
+                return renderWorkoutDetails(workout)
+              } catch (error) {
+                return (
+                  <div className="flex items-center justify-center h-32 text-white/60">
+                    <p className="flex items-center gap-2">
+                      <Dumbbell className="w-5 h-5" />
+                      Invalid workout data
+                    </p>
+                  </div>
+                )
+              }
+            })()
+          ) : (
+            <div className="flex items-center justify-center h-32 text-white/60">
+              <p className="flex items-center gap-2">
+                <Dumbbell className="w-5 h-5" />
+                No recent workout recorded
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Progress Bars - Unchanged */}

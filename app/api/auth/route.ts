@@ -2,6 +2,7 @@
 
 import { NextResponse } from "next/server"
 import clientPromise from "../../../lib/mongodb"
+import bcrypt from "bcryptjs"  
 
 export async function POST(request: Request) {
   const { action, email, password, fullName, fitnessLevel, age, gender, phone, fitnessGoal, weight } = await request.json()
@@ -14,20 +15,22 @@ export async function POST(request: Request) {
       if (existingUser) {
         return NextResponse.json({ message: "User already exists" }, { status: 400 })
       }
-      // Insert new user with extended profile fields including weight
-      await usersCollection.insertOne({ email, password, fullName, fitnessLevel, age, gender, phone, fitnessGoal, weight })
+
+      const saltRounds = 10
+      const hashedPassword = await bcrypt.hash(password, saltRounds)
+      await usersCollection.insertOne({ email, password: hashedPassword, fullName, fitnessLevel, age, gender, phone, fitnessGoal, weight })
       return NextResponse.json({ message: "Signup successful" })
     } else if (action === "login") {
-      const user = await usersCollection.findOne({ email, password })
-      if (!user) {
-        return NextResponse.json({ message: "Invalid credentials" }, { status: 400 })
+      const user = await usersCollection.findOne({ email })
+
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        return NextResponse.json({ message: "Incorrect email or password. Please check your credentials and try again." }, { status: 400 })
       }
       const token = crypto.randomUUID()
-      // Return weight along with other user fields
       return NextResponse.json({ 
         message: "Login successful", 
         token, 
-        user: { email, fullName: user.fullName, weight: user.weight }
+        user: { email, fullName: user.fullName, weight: user.weight } 
       })
     } else {
       return NextResponse.json({ message: "Invalid action" }, { status: 400 })
