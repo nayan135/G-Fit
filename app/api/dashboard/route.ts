@@ -41,14 +41,13 @@ export async function POST(request: Request) {
    
       const existingRecord = await db.collection("dailyRecords").findOne({ email, date: dailyRecord.date })
       if (existingRecord) {
-        // Increment the dailyCalories field with the new calories
+
         await db.collection("dailyRecords").updateOne(
           { email, date: dailyRecord.date },
           { $inc: { dailyCalories: Number(dailyRecord.dailyCalories) } }
         )
         return NextResponse.json({ message: "Daily record updated successfully" })
       } else {
-        // Insert a new daily record for the day
         await db.collection("dailyRecords").insertOne({ email, ...dailyRecord })
         return NextResponse.json({ message: "Daily record added successfully" })
       }
