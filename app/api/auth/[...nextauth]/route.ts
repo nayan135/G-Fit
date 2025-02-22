@@ -1,6 +1,6 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import clientPromise from "c:\\Users\\achar\\Downloads\\g-fit\\lib\\mongodb"
+import clientPromise from "../../../lib/mongodb"
 import { MongoClient } from "mongodb"
 import bcrypt from "bcryptjs" 
 
