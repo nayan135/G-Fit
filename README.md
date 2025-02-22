@@ -40,9 +40,20 @@
 
 ## 👨‍💻 Developers
 
-- Narayan Bhusal (Lead Developer || Frontend Developer)
-- Nayan Acharya (Lead Developer || Backend Developer)
-- Shsank Shrestha (Fitness Head ||)
+- **Narayan Bhusal**  
+  *Lead Developer | Frontend Developer*
+
+- **Nayan Acharya**  
+  *Lead Developer | Backend Developer*
+
+- **Dilip Acharya**  
+  *Backend Developer*
+
+- **Shsank Shrestha**  
+  *Backend Developer | Formula Maker*
+
+- **Rabin Chudali**  
+  *Frontend Developer*
 
 ## 📸 Screenshots
 
