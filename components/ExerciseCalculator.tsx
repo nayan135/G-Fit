@@ -67,7 +67,7 @@ const exercises = [
   },
 ]
 
-export default function ExerciseCalculator({ calorieAmount, setCalorieAmount }) {
+export default function ExerciseCalculator({ calorieAmount, setCalorieAmount, onWorkoutFinish }) {
   const [selectedExercises, setSelectedExercises] = useState([])
   const [exerciseResults, setExerciseResults] = useState([])
   const [intensity, setIntensity] = useState("moderate")
@@ -171,41 +171,16 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount }) 
     setWorkoutStarted(false)
     const duration = Date.now() - startTime
     const finalCalories = Math.round(totalCaloriesBurned)
-    // Create workout summary
     const workoutSummary = {
       date: new Date().toISOString(),
       duration: formatTime(duration),
-      exercises: selectedExercises.map((ex) => ex.name),
+      type: "Exercise Calculator",
       intensity,
       caloriesBurned: finalCalories,
-      weight,
     }
-
-    // Update DB: send total calories burned & workout summary via profile update (or extended API call)
-    const storedUser = localStorage.getItem("user")
-    let email = ""
-    if (storedUser) {
-      email = JSON.parse(storedUser).email
-    }
-    try {
-      const response = await fetch("/api/dashboard", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "profile",
-          email,
-          profileData: {
-            caloriesBurned: finalCalories,
-            recentWorkout: JSON.stringify(workoutSummary)
-          },
-        }),
-      })
-      if (!response.ok) throw new Error("Failed to update workout data")
-      // Optionally update parent's daily calories too
-      setCalorieAmount(prev => prev + finalCalories)
-      alert(`Workout recorded: ${workoutSummary.duration} and ${finalCalories} calories burned`)
-    } catch (error) {
-      console.error("Error updating workout data:", error)
+    // Call the parent's callback instead of performing the fetch here.
+    if (onWorkoutFinish) {
+      onWorkoutFinish(workoutSummary)
     }
   }
 
@@ -244,7 +219,7 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount }) 
                 type="number"
                 value={weight}
                 onChange={(e) => setWeight(Number(e.target.value))}
-                disabled={workoutStarted}
+                disabled={true} // always disabled so user can't edit weight
                 className="w-24 px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 text-black dark:text-white"
                 min="30"
                 max="200"

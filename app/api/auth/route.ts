@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 import clientPromise from "../../../lib/mongodb"
 
 export async function POST(request: Request) {
-  const { action, email, password, fullName, fitnessLevel, age, gender, phone, fitnessGoal } = await request.json()
+  const { action, email, password, fullName, fitnessLevel, age, gender, phone, fitnessGoal, weight } = await request.json()
   try {
     const client = await clientPromise
     const db = client.db("GFIT")
@@ -14,20 +14,20 @@ export async function POST(request: Request) {
       if (existingUser) {
         return NextResponse.json({ message: "User already exists" }, { status: 400 })
       }
-      // Insert new user with extended profile fields
-      await usersCollection.insertOne({ email, password, fullName, fitnessLevel, age, gender, phone, fitnessGoal })
+      // Insert new user with extended profile fields including weight
+      await usersCollection.insertOne({ email, password, fullName, fitnessLevel, age, gender, phone, fitnessGoal, weight })
       return NextResponse.json({ message: "Signup successful" })
     } else if (action === "login") {
       const user = await usersCollection.findOne({ email, password })
       if (!user) {
         return NextResponse.json({ message: "Invalid credentials" }, { status: 400 })
       }
-      // Generate a session token
       const token = crypto.randomUUID()
+      // Return weight along with other user fields
       return NextResponse.json({ 
         message: "Login successful", 
         token, 
-        user: { email, fullName: user.fullName }
+        user: { email, fullName: user.fullName, weight: user.weight }
       })
     } else {
       return NextResponse.json({ message: "Invalid action" }, { status: 400 })

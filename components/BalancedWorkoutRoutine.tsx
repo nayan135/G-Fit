@@ -32,7 +32,7 @@ const workoutTypes = {
   ],
 }
 
-export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount }) {
+export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount, onWorkoutFinish }) {
   const [intensity, setIntensity] = useState("moderate")
   const [workoutPlan, setWorkoutPlan] = useState(null)
   const [workoutStarted, setWorkoutStarted] = useState(false)
@@ -154,15 +154,6 @@ export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount
     setWorkoutStarted(false)
     const duration = Date.now() - startTime
     const finalCalories = totalCaloriesBurned
-
-    // Get user email from localStorage
-    const storedUser = localStorage.getItem("user")
-    let email = ""
-    if (storedUser) {
-      email = JSON.parse(storedUser).email
-    }
-
-    // Create workout summary
     const workoutSummary = {
       date: new Date().toISOString(),
       duration: formatTime(duration),
@@ -170,27 +161,9 @@ export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount
       intensity,
       caloriesBurned: Math.round(finalCalories),
     }
-
-    // Update dashboard data
-    try {
-      const response = await fetch("/api/dashboard", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          caloriesBurned: Math.round(finalCalories),
-          workoutSummary,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to update workout data")
-      }
-
-      // Update the total calories in the parent component
-      setCalorieAmount((prev) => prev + Math.round(finalCalories))
-    } catch (error) {
-      console.error("Error updating workout data:", error)
+    // Instead of calling fetch directly, call the parent's callback.
+    if (onWorkoutFinish) {
+      onWorkoutFinish(workoutSummary)
     }
   }
 

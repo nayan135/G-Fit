@@ -105,6 +105,26 @@ export default function Tools() {
     return () => clearInterval(interval)
   }, []) // Use an empty dependency array so the effect runs continuously
 
+  const handleWorkoutFinish = async (workoutSummary) => {
+    const storedUser = localStorage.getItem("user")
+    let email = ""
+    if (storedUser) {
+      email = JSON.parse(storedUser).email
+    }
+    await fetch("/api/dashboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "profile",
+        email,
+        profileData: {
+          dailyCalories: calorieAmount,
+          recentWorkout: JSON.stringify(workoutSummary),
+        },
+      }),
+    })
+  }
+
   if (!mounted) {
     return null
   }
@@ -155,10 +175,18 @@ export default function Tools() {
               <FoodCalorieTracker calorieAmount={calorieAmount} setCalorieAmount={setCalorieAmount} />
             )}
             {activeTool === "Exercise Calculator" && (
-              <ExerciseCalculator calorieAmount={calorieAmount} setCalorieAmount={setCalorieAmount} />
+              <ExerciseCalculator
+                calorieAmount={calorieAmount}
+                setCalorieAmount={setCalorieAmount}
+                onWorkoutFinish={handleWorkoutFinish}
+              />
             )}
             {activeTool === "Balanced Workout" && (
-              <BalancedWorkoutRoutine calorieAmount={calorieAmount} setCalorieAmount={setCalorieAmount} />
+              <BalancedWorkoutRoutine
+                calorieAmount={calorieAmount}
+                setCalorieAmount={setCalorieAmount}
+                onWorkoutFinish={handleWorkoutFinish}
+              />
             )}
           </motion.div>
         </AnimatePresence>
