@@ -41,16 +41,16 @@
 ## 👨‍💻 Developers
 
 - **Narayan Bhusal**  
-  *Lead Developer | Frontend Developer*
+  *Lead Developer *||* Frontend Developer*
 
 - **Nayan Acharya**  
-  *Lead Developer | Backend Developer*
+  *Lead Developer* || *Backend Developer*
 
 - **Dilip Acharya**  
   *Backend Developer*
 
 - **Shsank Shrestha**  
-  *Backend Developer | Formula Maker*
+  *Backend Developer *||* Fitness Head*
 
 - **Rabin Chudali**  
   *Frontend Developer*
