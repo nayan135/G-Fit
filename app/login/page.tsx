@@ -168,7 +168,7 @@ export default function Login() {
                 <input
                   type="text"
                   id="fitnessGoal"
-                  placeholder="e.g., weight loss, muscle gain"
+                  placeholder=" What do you want?"
                   value={fitnessGoal}
                   onChange={(e) => setFitnessGoal(e.target.value)}
                   className="w-full px-4 py-2 rounded-lg bg-white dark:bg-[#2a2a2a] border border-gray-300 dark:border-gray-600 text-black dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"

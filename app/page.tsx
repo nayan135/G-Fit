@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
+import Link from "next/link"
 
 export default function Home() {
   return (
@@ -46,12 +47,16 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-col md:flex-row gap-4 justify-center"
           >
-            <button className="px-8 py-3 bg-black text-white dark:bg-white dark:text-black rounded-full font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors">
-              Start Now
-            </button>
-            <button className="px-8 py-3 border border-black text-black dark:border-white dark:text-white rounded-full font-medium hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
-              Learn More
-            </button>
+            <Link href="/login">
+              <button className="px-8 py-3 bg-black text-white dark:bg-white dark:text-black rounded-full font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors">
+                Start Now
+              </button>
+            </Link>
+            <Link href="/about">
+              <button className="px-8 py-3 border border-black text-black dark:border-white dark:text-white rounded-full font-medium hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                Learn More
+              </button>
+            </Link>
           </motion.div>
         </div>
 
@@ -87,7 +92,7 @@ export default function Home() {
             transition={{ duration: 0.5 }}
             className="text-center p-8 border border-black/10 dark:border-white/10 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
           >
-            <div className="text-4xl font-bold mb-2 text-black dark:text-white">10K+</div>
+            <div className="text-4xl font-bold mb-2 text-black dark:text-white">10+</div>
             <div className="text-gray-600 dark:text-gray-400">Active Users</div>
           </motion.div>
           <motion.div
@@ -96,7 +101,7 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-center p-8 border border-black/10 dark:border-white/10 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
           >
-            <div className="text-4xl font-bold mb-2 text-black dark:text-white">500+</div>
+            <div className="text-4xl font-bold mb-2 text-black dark:text-white">3+</div>
             <div className="text-gray-600 dark:text-gray-400">Workout Plans</div>
           </motion.div>
           <motion.div
@@ -125,14 +130,17 @@ export default function Home() {
           <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
             Join thousands of others who have already transformed their lives with G-Fit.
           </p>
+          <Link href="/login">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }} 
             className="px-8 py-3 bg-black text-white dark:bg-white dark:text-black rounded-full font-medium inline-flex items-center group"
           >
+            
             Get Started
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </motion.button>
+          </Link>
         </motion.div>
       </section>
     </div>
