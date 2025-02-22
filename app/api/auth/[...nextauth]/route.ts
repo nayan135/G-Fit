@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import clientPromise from "../../../lib/mongodb"
+// Updated relative path for production
+import clientPromise from "../../../../lib/mongodb"
 import { MongoClient } from "mongodb"
 import bcrypt from "bcryptjs" 
 
