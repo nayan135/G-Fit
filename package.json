@@ -1,7 +1,7 @@
 {
     "name": "G-FIT",
     "description": "G-FIT is a fitness app that helps you to stay fit and healthy.",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "private": true,
     "scripts": {
         "dev": "next dev",
