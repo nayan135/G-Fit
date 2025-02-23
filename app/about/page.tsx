@@ -20,7 +20,7 @@ const developers = [
     image: "https://iili.io/2Z7vNls.jpg",
     github: "https://github.com/nayan135",
     linkedin: "https://www.linkedin.com/in/nayan135/",
-    email: "nayan.acharya@gmail.com",
+    email: "nayan135@proton.me",
   },
   {
     name: "Mission Acharya",
