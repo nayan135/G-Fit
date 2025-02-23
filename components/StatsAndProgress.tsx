@@ -14,6 +14,7 @@ import {
   FlameIcon as Fire,
   Trophy,
   ArrowRight,
+  Flag
 } from "lucide-react"
 
 export default function StatsAndProgress({ userData, isEditing, handleInputChange, handleSave, setIsEditing }) {
@@ -24,6 +25,7 @@ export default function StatsAndProgress({ userData, isEditing, handleInputChang
       duration: <Clock className="w-5 h-5 text-green-400" />,
       intensity: <Zap className="w-5 h-5 text-yellow-400" />,
       caloriesBurned: <Fire className="w-5 h-5 text-orange-400" />,
+      exercises: <Activity className="w-5 h-5 text-red-400" />,
     }
 
     return (
@@ -34,8 +36,27 @@ export default function StatsAndProgress({ userData, isEditing, handleInputChang
         className="space-y-4"
       >
         {Object.entries(workout).map(([key, value]) => {
+          // Format date value
           if (key === "date") {
             value = new Date(value).toLocaleString()
+          }
+          // Render array of exercises if present
+          if (key === "exercises" && Array.isArray(value)) {
+            return (
+              <motion.div
+                key={key}
+                initial={{ x: -20 }}
+                animate={{ x: 0 }}
+                transition={{ duration: 0.5 }}
+                className="flex items-center gap-4 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+              >
+                <div className="p-2 rounded-lg gradient-accent">{workoutIcons[key]}</div>
+                <div>
+                  <p className="text-sm text-white/60 capitalize">Exercises</p>
+                  <p className="font-semibold">{value.join(", ")}</p>
+                </div>
+              </motion.div>
+            )
           }
           if (workoutIcons[key]) {
             return (
@@ -65,8 +86,8 @@ export default function StatsAndProgress({ userData, isEditing, handleInputChang
   return (
     <div className="space-y-6">
       {/* Stats Cards - Unchanged */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* ... existing stats cards code ... */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        {/* Daily Goal Card */}
         <div className="backdrop-blur-md bg-white/10 p-6 rounded-2xl">
           <div className="flex items-center gap-3 mb-4">
             <div className="gradient-accent">
@@ -78,6 +99,7 @@ export default function StatsAndProgress({ userData, isEditing, handleInputChang
           <p className="text-white/60 text-sm">calories</p>
         </div>
 
+        {/* Burned Calories Card */}
         <div className="backdrop-blur-md bg-white/10 p-6 rounded-2xl">
           <div className="flex items-center gap-3 mb-4">
             <div className="gradient-accent">
@@ -86,37 +108,38 @@ export default function StatsAndProgress({ userData, isEditing, handleInputChang
             <h3 className="font-semibold">Burned</h3>
           </div>
           <p className="text-3xl font-bold">{userData.caloriesBurned}</p>
-          <p className="text-white/60 text-sm">calories</p>
         </div>
-
+        
+        {/* New Fitness Goal Card */}
         <div className="backdrop-blur-md bg-white/10 p-6 rounded-2xl">
           <div className="flex items-center gap-3 mb-4">
             <div className="gradient-accent">
-              <Activity className="w-6 h-6 text-blue-400" />
+              <Flag className="w-6 h-6 text-indigo-400" />
+            </div>
+            <h3 className="font-semibold">Fitness Goal</h3>
+          </div>
+          {isEditing ? (
+            <textarea
+              name="fitnessGoal"
+              value={userData.fitnessGoal}
+              onChange={handleInputChange}
+              className="w-full bg-white/5 rounded-lg p-4 min-h-[100px] resize-none focus:outline-none focus:ring-2 focus:ring-white/20"
+            />
+          ) : (
+            <p className="text-white/80">{userData.fitnessGoal}</p>
+          )}
+        </div>
+
+        {/* Progress Card */}
+        <div className="backdrop-blur-md bg-white/10 p-6 rounded-2xl">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="gradient-accent">
+              <Trophy className="w-6 h-6 text-yellow-400" />
             </div>
             <h3 className="font-semibold">Progress</h3>
           </div>
           <p className="text-3xl font-bold">{userData.progress}%</p>
-          <p className="text-white/60 text-sm">completed</p>
         </div>
-      </div>
-
-      {/* Fitness Goal - Unchanged */}
-      <div className="backdrop-blur-md bg-white/10 p-6 rounded-2xl">
-        <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Target className="w-5 h-5 text-pink-400" />
-          Fitness Goal
-        </h3>
-        {isEditing ? (
-          <textarea
-            name="fitnessGoal"
-            value={userData.fitnessGoal}
-            onChange={handleInputChange}
-            className="w-full bg-white/5 rounded-lg p-4 min-h-[100px] resize-none focus:outline-none focus:ring-2 focus:ring-white/20"
-          />
-        ) : (
-          <p className="text-white/80">{userData.fitnessGoal}</p>
-        )}
       </div>
 
       {/* Enhanced Recent Workout */}

@@ -15,10 +15,10 @@ interface ThemeColors {
 
 export function ThemeCustomizer() {
   const [colors, setColors] = React.useState<ThemeColors>({
-    primary: "#7C3AED", // violet-600
-    secondary: "#EC4899", // pink-500
-    accent: "#3B82F6", // blue-500
-    background: "#581C87", // violet-900
+    primary: "#7C3AED", 
+    secondary: "#EC4899", 
+    accent: "#3B82F6", 
+    background: "#581C87", 
   })
 
   const updateColor = (key: keyof ThemeColors, value: string) => {

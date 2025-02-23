@@ -22,7 +22,7 @@ const sampleUserData = {
   dailyCalories: 0,
   progress: 75,
   recentWorkout: "",
-  Weight: 45,
+  weight: 45,
   profilePic: "/placeholder.svg?height=200&width=200",
 }
 
@@ -39,7 +39,7 @@ interface UserData {
   dailyCalories: number
   progress: number
   recentWorkout: string
-  Weight: number
+  weight: number
   profilePic?: string
 }
 
@@ -60,7 +60,7 @@ export default function Dashboard() {
     dailyCalories: 0,
     progress: 0,
     recentWorkout: "",
-    Weight: 0,
+    weight: 0,
     profilePic: "/placeholder.svg?height=200&width=200",
   })
 

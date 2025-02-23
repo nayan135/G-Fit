@@ -76,11 +76,11 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount, on
   const [elapsedTime, setElapsedTime] = useState(0)
   const [totalCaloriesBurned, setTotalCaloriesBurned] = useState(0)
   const [workoutHistory, setWorkoutHistory] = useState([])
-  const [weight, setWeight] = useState(70) // Default weight in kg
+  const [weight, setWeight] = useState(50) 
   const [currentExerciseStart, setCurrentExerciseStart] = useState(null)
   const [restStartTime, setRestStartTime] = useState(null)
   const [isResting, setIsResting] = useState(false)
-  const REST_DURATION = 60 * 1000 // 60 seconds rest between exercises
+  const REST_DURATION = 60 * 1000 
 
   // Calculate calories burned for a specific exercise
   const calculateCaloriesBurned = useCallback(

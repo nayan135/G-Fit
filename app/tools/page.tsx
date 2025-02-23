@@ -105,12 +105,14 @@ export default function Tools() {
     return () => clearInterval(interval)
   }, []) // Use an empty dependency array so the effect runs continuously
 
+  // Updated handleWorkoutFinish to send and store recent workout data
   const handleWorkoutFinish = async (workoutSummary) => {
     const storedUser = localStorage.getItem("user")
     let email = ""
     if (storedUser) {
       email = JSON.parse(storedUser).email
     }
+    // Send workout summary to update dashboard profile
     await fetch("/api/dashboard", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -123,7 +125,30 @@ export default function Tools() {
         },
       }),
     })
+    // Update local recentWorkout state (optional, for immediate UI use)
+    setRecentWorkout(JSON.stringify(workoutSummary))
   }
+
+  // Add new effect to fetch user profile data including weight and recent workout
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user")
+    if (storedUser) {
+      const email = JSON.parse(storedUser).email
+      fetch(`/api/dashboard?email=${email}`)
+        .then(res => res.json())
+        .then(data => {
+          if(data.profile) {
+            if(data.profile.weight) {
+              setUserWeight(data.profile.weight)
+            }
+            if(data.profile.recentWorkout) {
+              setRecentWorkout(data.profile.recentWorkout)
+            }
+          }
+        })
+        .catch(err => console.error("Error fetching user profile:", err))
+    }
+  }, [])
 
   if (!mounted) {
     return null
@@ -175,10 +200,14 @@ export default function Tools() {
               <FoodCalorieTracker calorieAmount={calorieAmount} setCalorieAmount={setCalorieAmount} />
             )}
             {activeTool === "Exercise Calculator" && (
+              // Pass the weight prop here if needed; assumed to come from user profile elsewhere.
               <ExerciseCalculator
                 calorieAmount={calorieAmount}
                 setCalorieAmount={setCalorieAmount}
                 onWorkoutFinish={handleWorkoutFinish}
+                // weight prop should be provided from a higher-level state or passed via user profile; 
+                // for demonstration, using a fixed value (e.g., 70 kg)
+                weight={userWeight ? Number(userWeight) : 70} // use fetched weight; fallback to 70 if not available
               />
             )}
             {activeTool === "Balanced Workout" && (

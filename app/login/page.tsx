@@ -42,7 +42,18 @@ export default function Login() {
       }
     } else {
       const action = "signup";
-      const body = { action, email, password, fullName, fitnessLevel, age, gender, phone, fitnessGoal, weight };
+      const body = {
+        action, 
+        email, 
+        password, 
+        fullName, 
+        fitnessLevel, 
+        age, 
+        gender, 
+        phone, 
+        fitnessGoal, 
+        weight: Number(weight) 
+      };
       try {
         const res = await fetch("/api/auth", {
           method: "POST",
