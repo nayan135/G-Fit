@@ -41,19 +41,19 @@
 ## 👨‍💻 Developers
 
 - **Narayan Bhusal**  
-  *Lead Developer *||* Frontend Developer*
+  _Lead Developer _||_ Frontend Developer_
 
 - **Nayan Acharya**  
-  *Lead Developer* || *Backend Developer*
+  _Lead Developer_ || _Backend Developer_
 
 - **Dilip Acharya**  
-  *Backend Developer*
+  _Backend Developer_
 
 - **Shsank Shrestha**  
-  *Backend Developer *||* Fitness Head*
+  _Backend Developer _||_ Fitness Head_
 
 - **Rabin Chudali**  
-  *Frontend Developer*
+  _Frontend Developer_
 
 ## 📸 Screenshots
 

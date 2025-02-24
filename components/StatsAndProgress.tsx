@@ -86,7 +86,7 @@ export default function StatsAndProgress({ userData, isEditing, handleInputChang
   return (
     <div className="space-y-6">
       {/* Stats Cards - Unchanged */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Daily Goal Card */}
         <div className="backdrop-blur-md bg-white/10 p-6 rounded-2xl">
           <div className="flex items-center gap-3 mb-4">
@@ -110,25 +110,7 @@ export default function StatsAndProgress({ userData, isEditing, handleInputChang
           <p className="text-3xl font-bold">{userData.caloriesBurned}</p>
         </div>
         
-        {/* New Fitness Goal Card */}
-        <div className="backdrop-blur-md bg-white/10 p-6 rounded-2xl">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="gradient-accent">
-              <Flag className="w-6 h-6 text-indigo-400" />
-            </div>
-            <h3 className="font-semibold">Fitness Goal</h3>
-          </div>
-          {isEditing ? (
-            <textarea
-              name="fitnessGoal"
-              value={userData.fitnessGoal}
-              onChange={handleInputChange}
-              className="w-full bg-white/5 rounded-lg p-4 min-h-[100px] resize-none focus:outline-none focus:ring-2 focus:ring-white/20"
-            />
-          ) : (
-            <p className="text-white/80">{userData.fitnessGoal}</p>
-          )}
-        </div>
+        
 
         {/* Progress Card */}
         <div className="backdrop-blur-md bg-white/10 p-6 rounded-2xl">
@@ -141,6 +123,25 @@ export default function StatsAndProgress({ userData, isEditing, handleInputChang
           <p className="text-3xl font-bold">{userData.progress}%</p>
         </div>
       </div>
+      {/* New Fitness Goal Card */}
+              <div className="backdrop-blur-md bg-white/10 p-6 rounded-2xl">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="gradient-accent">
+                    <Flag className="w-6 h-6 text-indigo-400" />
+                  </div>
+                  <h3 className="font-semibold">Fitness Goal</h3>
+                </div>
+                {isEditing ? (
+                  <textarea
+                    name="fitnessGoal"
+                    value={userData.fitnessGoal}
+                    onChange={handleInputChange}
+                    className="w-full bg-white/5 rounded-lg p-4 min-h-[100px] resize-none focus:outline-none focus:ring-2 focus:ring-white/20"
+                  />
+                ) : (
+                  <p className="text-white/80">{userData.fitnessGoal}</p>
+                )}
+              </div>
 
       {/* Enhanced Recent Workout */}
       <div className="backdrop-blur-md bg-white/10 p-6 rounded-2xl">
