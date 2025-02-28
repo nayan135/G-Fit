@@ -38,13 +38,13 @@ const developers = [
     linkedin: "https://www.linkedin.com/in/shasank01/",
     email: "shasank.shrestha@gmail.com",
   },
-  {
-    name: "Rabin Chudali",
-    role: "UI Designer",
-    image: "https://iili.io/2yt9vbs.jpg",
-    github: "https://github.com/TechnophileCracker",
-    linkedin: "https://linkedin.com/in/rabin-chudali",
-    email: "mailto: chudalirabin@proton.me",
+ {
+    name: "Prazwal Roka",
+    role: "UI Designer || Fitness Expert",
+    image: "https://iili.io/3dMWeDP.jpg",
+    github: "https://github.com/prazwal30",
+    linkedin: "https://linkedin.com/in/",
+    email: "mailto: prazwal@proton.me",
   },
 ]
 
