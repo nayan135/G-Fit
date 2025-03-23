@@ -49,7 +49,7 @@
 - **Dilip Acharya**  
   _Backend Developer_
 
-- **Shsank Shrestha**  
+- **Shasank Shrestha**  
   _Backend Developer _||_ Fitness Head_
 
 - **Rabin Chudali**  
