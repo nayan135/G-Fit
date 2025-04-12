@@ -42,10 +42,10 @@ const developers = [
   {
     name: "Rabin Chudali",
     role: "UI Designer",
-    image: "https://iili.io/3RprAo7.webp",
+    image: "https://iili.io/2yt9vbs.jpg",
     github: "https://github.com/TechnophileCracker",
     linkedin: "https://linkedin.com/in/rabin-chudali",
-    email: "chudalirabin@proton.me",
+    email: "mailto: chudalirabin@proton.me",
   },
 ]
 
