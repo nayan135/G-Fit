@@ -1,4 +1,5 @@
 "use client"
+
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { Github, Linkedin, Mail, Moon, Sun } from "lucide-react"
@@ -9,15 +10,15 @@ const developers = [
   {
     name: "Narayan Bhusal",
     role: "Lead Developer || Frontend Developer",
-    image: "https://iili.io/2Z7vtOQ.png",
+    image: "https://iili.io/3RprIN2.webp",
     github: "https://github.com/naranbhusal02",
     linkedin: "https://linkedin.com/in/naranbhusal02",
-    email: "mailto: contactwithnaran@proton.me",
+    email: "contactwithnaran@proton.me",
   },
   {
     name: "Nayan Acharya",
     role: "Lead Developer || Backend Developer",
-    image: "https://iili.io/2Z7vNls.jpg",
+    image: "https://iili.io/3cOH5J9.png",
     github: "https://github.com/nayan135",
     linkedin: "https://www.linkedin.com/in/nayan135/",
     email: "nayan135@proton.me",
@@ -25,7 +26,7 @@ const developers = [
   {
     name: "Mission Acharya",
     role: "UI/UX Designer",
-    image: "https://iili.io/2yLtERR.jpg",
+    image: "https://iili.io/3RprnSf.webp",
     github: "https://github.com/JCT-B",
     linkedin: "https://www.linkedin.com/in/dilip--acharya/",
     email: "mission.acharya@gmail.com",
@@ -33,7 +34,7 @@ const developers = [
   {
     name: "Shasank Shrestha",
     role: "Backend Developer",
-    image: "https://iili.io/2yx6cVs.png",
+    image: "https://iili.io/3Rprx94.webp",
     github: "https://github.com/shasankshrestha",
     linkedin: "https://www.linkedin.com/in/shasank01/",
     email: "shasank.shrestha@gmail.com",
@@ -41,10 +42,10 @@ const developers = [
   {
     name: "Rabin Chudali",
     role: "UI Designer",
-    image: "https://iili.io/2yt9vbs.jpg",
+    image: "https://iili.io/3RprAo7.webp",
     github: "https://github.com/TechnophileCracker",
     linkedin: "https://linkedin.com/in/rabin-chudali",
-    email: "mailto: chudalirabin@proton.me",
+    email: "chudalirabin@proton.me",
   },
 ]
 
@@ -133,13 +134,16 @@ export default function About() {
               transition={{ duration: 0.5, delay: index * 0.1 + 1.2 }}
               className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md text-center"
             >
-              <Image
-                src={dev.image || "/placeholder.svg"}
-                alt={dev.name}
-                width={150}
-                height={150}
-                className="rounded-full mx-auto mb-4"
-              />
+              <div className="w-[150px] h-[150px] mx-auto mb-4 overflow-hidden rounded-full border-2 border-gray-200 dark:border-gray-700">
+                <Image
+                  src={dev.image || "/placeholder.svg"}
+                  alt={dev.name}
+                  width={150}
+                  height={150}
+                  className="w-full h-full object-cover"
+                  style={{ borderRadius: "50%" }}
+                />
+              </div>
               <h3 className="text-xl font-semibold mb-2">{dev.name}</h3>
               <p className="text-black dark:text-gray-400 mb-4">{dev.role}</p>
               <div className="flex justify-center space-x-4">
@@ -173,4 +177,3 @@ export default function About() {
     </div>
   )
 }
-
