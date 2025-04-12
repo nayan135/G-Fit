@@ -44,7 +44,12 @@ export async function POST(request: Request) {
 
         await db.collection("dailyRecords").updateOne(
           { email, date: dailyRecord.date },
-          { $inc: { dailyCalories: Number(dailyRecord.dailyCalories) } }
+          { 
+            $inc: { 
+              dailyCalories: Number(dailyRecord.dailyCalories || 0),
+              caloriesBurned: Number(dailyRecord.caloriesBurned || 0)
+            } 
+          }
         )
         return NextResponse.json({ message: "Daily record updated successfully" })
       } else {

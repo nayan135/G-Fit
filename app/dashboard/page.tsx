@@ -11,13 +11,13 @@ import StatsAndProgress from "@/components/StatsAndProgress"
 // Sample data fallback if DB connection is not available
 const sampleUserData = {
   _id: "67b8b68bcb0a84011f23f287",
-  email: "jctbiura@gmail.com",
-  fullName: "Dilip Acharya",
+  email: "nayan@ypstem.org",
+  fullName: "Nayan Acharya",
   fitnessLevel: "advanced",
   age: "18",
   gender: "male",
   phone: "9847036628",
-  fitnessGoal: "Nayan ko jindabad",
+  fitnessGoal: "Stay fit and healthy",
   caloriesBurned: 500,
   dailyCalories: 0,
   progress: 75,

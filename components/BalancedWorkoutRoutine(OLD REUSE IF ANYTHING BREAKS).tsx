@@ -32,7 +32,7 @@ const workoutTypes = {
   ],
 }
 
-export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount }) {
+export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount, onWorkoutFinish }) {
   const [intensity, setIntensity] = useState("moderate")
   const [workoutPlan, setWorkoutPlan] = useState(null)
   const [workoutStarted, setWorkoutStarted] = useState(false)
@@ -41,11 +41,31 @@ export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount
   const [totalCaloriesBurned, setTotalCaloriesBurned] = useState(0)
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)
   const [currentSection, setCurrentSection] = useState(0)
+  const [userWeight, setUserWeight] = useState(70) // Default weight if not available
 
   useEffect(() => {
     if (calorieAmount > 0) {
       generateWorkoutPlan()
     }
+    
+    // Fetch user weight from database
+    const fetchUserWeight = async () => {
+      try {
+        const storedUser = localStorage.getItem("user")
+        if (storedUser) {
+          const email = JSON.parse(storedUser).email
+          const response = await fetch(`/api/dashboard?email=${email}`)
+          const data = await response.json()
+          if (data.profile && data.profile.weight) {
+            setUserWeight(data.profile.weight)
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user weight:", error)
+      }
+    }
+    
+    fetchUserWeight()
   }, [calorieAmount])
 
   useEffect(() => {
@@ -66,7 +86,8 @@ export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount
           const exercise = currentSectionExercises[currentExerciseIndex]
           if (exercise && exercise.caloriesPerMinute) {
             const minutesElapsed = elapsed / (1000 * 60)
-            const caloriesBurned = exercise.caloriesPerMinute[intensity] * minutesElapsed
+            // Adjust calories burned based on user weight
+            const caloriesBurned = exercise.caloriesPerMinute[intensity] * minutesElapsed * (userWeight / 70)
             setTotalCaloriesBurned((prev) => prev + caloriesBurned)
           }
         }
@@ -177,14 +198,37 @@ export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          type: "profile",
           email,
-          caloriesBurned: Math.round(finalCalories),
-          workoutSummary,
+          profileData: {
+            caloriesBurned: Math.round(finalCalories),
+            recentWorkout: JSON.stringify(workoutSummary)
+          }
         }),
       })
 
       if (!response.ok) {
         throw new Error("Failed to update workout data")
+      }
+      
+      // Also update daily record
+      const today = new Date().toISOString().split("T")[0]
+      await fetch("/api/dashboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "daily",
+          email,
+          dailyRecord: {
+            date: today,
+            caloriesBurned: Math.round(finalCalories)
+          }
+        }),
+      })
+      
+      // Call the onWorkoutFinish callback if provided
+      if (onWorkoutFinish) {
+        onWorkoutFinish(workoutSummary)
       }
 
       // Update the total calories in the parent component

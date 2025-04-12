@@ -144,6 +144,9 @@ export default function Tools() {
             if(data.profile.recentWorkout) {
               setRecentWorkout(data.profile.recentWorkout)
             }
+            if(data.profile.caloriesBurned) {
+              setCaloriesBurned(data.profile.caloriesBurned)
+            }
           }
         })
         .catch(err => console.error("Error fetching user profile:", err))
