@@ -23,7 +23,8 @@ const developers = [
     linkedin: "https://www.linkedin.com/in/nayan135/",
     email: "nayan135@proton.me",
   },
-  {
+  /*
+    {
     name: "Mission Acharya",
     role: "UI/UX Designer",
     image: "https://iili.io/3RprnSf.webp",
@@ -31,14 +32,15 @@ const developers = [
     linkedin: "https://www.linkedin.com/in/dilip--acharya/",
     email: "mission.acharya@gmail.com",
   },
-  {
-    name: "Shasank Shrestha",
+{
+
+name: "Shasank Shrestha",
     role: "Backend Developer",
     image: "https://iili.io/3Rprx94.webp",
     github: "https://github.com/shasankshrestha",
     linkedin: "https://www.linkedin.com/in/shasank01/",
     email: "shasank.shrestha@gmail.com",
-  },
+  },*/
   {
     name: "Rabin Chudali",
     role: "UI Designer",

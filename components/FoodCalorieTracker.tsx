@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import { X, Plus, Utensils } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-// Add defaultFoods definition before usage
 const defaultFoods = [
   { name: "Sandwich", caloriesPer100g: 250 },
   { name: "Apple", caloriesPer100g: 52 },
@@ -36,7 +35,7 @@ export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) 
         const res = await fetch("/api/foods")
         if (!res.ok) throw new Error("Failed to fetch foods")
         const data = await res.json()
-        // Assume API returns an object like { foods: [...] }
+   
         setFoods(data.foods)
       } catch (err) {
         console.error("Error fetching foods:", err)
@@ -83,7 +82,7 @@ export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) 
         })
         if (!res.ok) throw new Error("Failed to add custom food")
         const result = await res.json()
-        // If API returns the newly created food in result.food, use it; otherwise fallback
+
         const addedFood = result.food ? result.food : newFoodData
         setFoods(prevFoods => [...prevFoods, addedFood])
         setCustomFood({ name: "", caloriesPer100g: "" })
@@ -93,7 +92,6 @@ export default function FoodCalorieTracker({ calorieAmount, setCalorieAmount }) 
     }
   }
 
-  // New effect: update total calories to database every 5 seconds
   useEffect(() => {
     const interval = setInterval(async () => {
       const storedUser = localStorage.getItem("user")

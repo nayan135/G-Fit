@@ -4,11 +4,10 @@ import { useState, useEffect, useCallback } from "react"
 import { motion } from "framer-motion"
 import { Activity, Flame, Check, Play, Square, Timer, Scale } from "lucide-react"
 
-// MET values from the Compendium of Physical Activities
 const exercises = [
   {
     name: "Push-ups",
-    met: 8.0, // Vigorous calisthenics
+    met: 8.0,
     icon: "💪",
     type: "reps",
     repsPerMinute: 20,
@@ -16,7 +15,7 @@ const exercises = [
   },
   {
     name: "Squats",
-    met: 5.0, // Calisthenics, moderate
+    met: 5.0,
     icon: "🦵",
     type: "reps",
     repsPerMinute: 15,
@@ -24,7 +23,7 @@ const exercises = [
   },
   {
     name: "Sit-ups",
-    met: 8.0, // Vigorous calisthenics
+    met: 8.0,
     icon: "🔄",
     type: "reps",
     repsPerMinute: 20,
@@ -32,42 +31,42 @@ const exercises = [
   },
   {
     name: "Jumping Jacks",
-    met: 8.0, // Vigorous calisthenics
+    met: 8.0,
     icon: "⭐",
     type: "duration",
     intensityMultiplier: { low: 0.7, moderate: 1.0, high: 1.3 },
   },
   {
     name: "Running",
-    met: 9.8, // Running 6 mph (10 min/mile)
+    met: 9.8,
     icon: "🏃",
     type: "duration",
     intensityMultiplier: { low: 0.7, moderate: 1.0, high: 1.3 },
   },
   {
     name: "Cycling",
-    met: 7.0, // Bicycling, moderate effort
+    met: 7.0,
     icon: "🚴",
     type: "duration",
     intensityMultiplier: { low: 0.7, moderate: 1.0, high: 1.3 },
   },
   {
     name: "Swimming",
-    met: 7.0, // Swimming, moderate effort
+    met: 7.0,
     icon: "🏊",
     type: "duration",
     intensityMultiplier: { low: 0.7, moderate: 1.0, high: 1.3 },
   },
   {
     name: "Jump Rope",
-    met: 12.3, // Rope jumping
+    met: 12.3,
     icon: "⚡",
     type: "duration",
     intensityMultiplier: { low: 0.7, moderate: 1.0, high: 1.3 },
   },
 ]
 
-export default function ExerciseCalculator({ calorieAmount, setCalorieAmount, onWorkoutFinish }) {
+export default function ExerciseCalculator({ calorieAmount, setCalorieAmount, onWorkoutFinish, weight: propWeight }) {
   const [selectedExercises, setSelectedExercises] = useState([])
   const [exerciseResults, setExerciseResults] = useState([])
   const [intensity, setIntensity] = useState("moderate")
@@ -76,16 +75,21 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount, on
   const [elapsedTime, setElapsedTime] = useState(0)
   const [totalCaloriesBurned, setTotalCaloriesBurned] = useState(0)
   const [workoutHistory, setWorkoutHistory] = useState([])
-  const [weight, setWeight] = useState(50) 
+  const [weight, setWeight] = useState(propWeight || 70) 
   const [currentExerciseStart, setCurrentExerciseStart] = useState(null)
   const [restStartTime, setRestStartTime] = useState(null)
   const [isResting, setIsResting] = useState(false)
   const REST_DURATION = 60 * 1000 
+  const [initialExercisesForHistory, setInitialExercisesForHistory] = useState([]);
 
-  // Calculate calories burned for a specific exercise
+  useEffect(() => {
+    if (propWeight) {
+      setWeight(propWeight);
+    }
+  }, [propWeight]);
+
   const calculateCaloriesBurned = useCallback(
     (exercise, durationInMinutes) => {
-    
       const durationInHours = durationInMinutes / 60
       const intensityMult = exercise.intensityMultiplier[intensity]
       const baseCalories = exercise.met * weight * durationInHours
@@ -151,6 +155,7 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount, on
     setElapsedTime(0)
     setTotalCaloriesBurned(0)
     setIsResting(false)
+    setInitialExercisesForHistory(selectedExercises.map(ex => ex.name)); // Store names for summary
   }
 
   const handleNextExercise = () => {
@@ -177,8 +182,12 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount, on
       type: "Exercise Calculator",
       intensity,
       caloriesBurned: finalCalories,
+      weight: weight, 
+      exercises: initialExercisesForHistory, 
     }
-    // Call the parent's callback instead of performing the fetch here.
+    setWorkoutHistory(prev => [workoutSummary, ...prev]); 
+
+    
     if (onWorkoutFinish) {
       onWorkoutFinish(workoutSummary)
     }
@@ -218,11 +227,12 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount, on
               <input
                 type="number"
                 value={weight}
-                onChange={(e) => setWeight(Number(e.target.value))}
-                disabled={true} // always disabled so user can't edit weight
+                disabled={true}
                 className="w-24 px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 text-black dark:text-white"
                 min="30"
                 max="200"
+                aria-label="Weight in kilograms"
+                title="Your current weight in kilograms"
               />
             </div>
           </div>
@@ -351,7 +361,7 @@ export default function ExerciseCalculator({ calorieAmount, setCalorieAmount, on
                     </p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Duration: {workout.duration}</p>
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {workout.exercises.map((ex, i) => (
+                      {workout.exercises && workout.exercises.map((ex, i) => (
                         <span
                           key={i}
                           className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded"

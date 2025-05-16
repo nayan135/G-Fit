@@ -36,11 +36,11 @@ export default function StatsAndProgress({ userData, isEditing, handleInputChang
         className="space-y-4"
       >
         {Object.entries(workout).map(([key, value]) => {
-          // Format date value
+          
           if (key === "date") {
             value = new Date(value).toLocaleString()
           }
-          // Render array of exercises if present
+ 
           if (key === "exercises" && Array.isArray(value)) {
             return (
               <motion.div
@@ -95,7 +95,7 @@ export default function StatsAndProgress({ userData, isEditing, handleInputChang
             </div>
             <h3 className="font-semibold">Daily Goal</h3>
           </div>
-          <p className="text-3xl font-bold">{userData.dailyCalories}</p>
+          <p className="text-3xl font-bold">{userData.dailyCaloriesTarget}</p>
           <p className="text-white/60 text-sm">calories</p>
         </div>
 
@@ -201,15 +201,13 @@ export default function StatsAndProgress({ userData, isEditing, handleInputChang
           </div>
           <div>
             <div className="flex justify-between mb-2">
-              <span className="text-sm font-medium">Daily Calories</span>
-              <span className="text-sm font-medium">
-                {userData.caloriesBurned} / {userData.dailyCalories}
+              <span className="text-sm font-medium">Daily Calories</span>              <span className="text-sm font-medium">
+                {userData.caloriesBurned} / {userData.dailyCaloriesTarget}
               </span>
-            </div>
-            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+            </div>            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
-                animate={{ width: `${(userData.caloriesBurned / (userData.dailyCalories || 1)) * 100}%` }}
+                animate={{ width: `${(userData.caloriesBurned / (userData.dailyCaloriesTarget || 1)) * 100}%` }}
                 transition={{ duration: 1, ease: "easeOut" }}
                 className="h-full bg-gradient-to-r from-green-500 to-emerald-500"
               />

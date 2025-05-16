@@ -67,6 +67,7 @@ export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount
           if (exercise && exercise.caloriesPerMinute) {
             const minutesElapsed = elapsed / (1000 * 60)
             const caloriesBurned = exercise.caloriesPerMinute[intensity] * minutesElapsed
+            // Update calories burned without affecting target calories
             setTotalCaloriesBurned((prev) => prev + caloriesBurned)
           }
         }
@@ -154,6 +155,15 @@ export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount
     setWorkoutStarted(false)
     const duration = Date.now() - startTime
     const finalCalories = totalCaloriesBurned
+    
+    // Get user email from localStorage
+    const storedUser = localStorage.getItem("user")
+    let email = ""
+    if (storedUser) {
+      email = JSON.parse(storedUser).email
+    }
+    
+    // Create workout summary
     const workoutSummary = {
       date: new Date().toISOString(),
       duration: formatTime(duration),
@@ -161,9 +171,45 @@ export default function BalancedWorkoutRoutine({ calorieAmount, setCalorieAmount
       intensity,
       caloriesBurned: Math.round(finalCalories),
     }
-    // Instead of calling fetch directly, call the parent's callback.
+    
+    // Call the parent's callback to update the database
     if (onWorkoutFinish) {
       onWorkoutFinish(workoutSummary)
+    }
+    
+    // Also directly update the database with workout data
+    try {
+      // Update profile data with workout summary and calories burned
+      await fetch("/api/dashboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "profile",
+          email,
+          profileData: {
+            caloriesBurned: Math.round(finalCalories),
+            recentWorkout: JSON.stringify(workoutSummary)
+          },
+        }),
+      })
+      
+      // Also update daily records to track calories burned
+      const today = new Date().toISOString().split("T")[0]
+      await fetch("/api/dashboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "daily",
+          email,
+          dailyRecord: {
+            date: today,
+            caloriesBurned: Math.round(finalCalories),
+            dailyCalories: 0 // Not updating target calories
+          }
+        }),
+      })
+    } catch (error) {
+      console.error("Error updating workout data:", error)
     }
   }
 

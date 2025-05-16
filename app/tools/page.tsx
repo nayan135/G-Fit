@@ -18,140 +18,72 @@ const tools = [
 export default function Tools() {
   const router = useRouter()
   const [activeTool, setActiveTool] = useState("Food Calorie Tracker")
-  const [calorieAmount, setCalorieAmount] = useState(0)
-  const [progress, setProgress] = useState(75)
-  const [caloriesBurned, setCaloriesBurned] = useState(500)
-  const [recentWorkout, setRecentWorkout] = useState("")
-  const [userWeight, setUserWeight] = useState("") // new state for weight
+  const [dailyCalorieTarget, setDailyCalorieTarget] = useState(0) 
+  const [userWeight, setUserWeight] = useState<number | null>(null)
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
 
-  // Check if user is logged in; if not, redirect to login
   useEffect(() => {
+    setMounted(true);
     const storedUser = localStorage.getItem("user")
     if (!storedUser) {
       router.push("/login")
     } else {
       const user = JSON.parse(storedUser)
-      if (user.weight) {
-        setUserWeight(user.weight)
+      setCurrentUserEmail(user.email);
+      if (user.email) {
+        fetch(`/api/dashboard?email=${user.email}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.profile) {
+              if (data.profile.weight) {
+                setUserWeight(Number(data.profile.weight))
+              }
+              if (data.profile.dailyCaloriesTarget) {
+                setDailyCalorieTarget(Number(data.profile.dailyCaloriesTarget));
+              } else if (data.todayDailyRecord && data.todayDailyRecord.dailyCaloriesTargetAtRecordTime) {
+                setDailyCalorieTarget(Number(data.todayDailyRecord.dailyCaloriesTargetAtRecordTime));
+              }
+            }
+          })
+          .catch(err => console.error("Error fetching user profile data:", err))
       }
     }
   }, [router])
 
-  useEffect(() => {
-    setMounted(true)
-    // New effect: fetch target calories from database on every load
-    const storedUser = localStorage.getItem("user")
-    if (storedUser) {
-      const email = JSON.parse(storedUser).email
-      fetch(`/api/dashboard?email=${email}`)
-        .then(res => res.json())
-        .then(data => {
-          if(data.profile && data.profile.dailyCalories) {
-            setCalorieAmount(data.profile.dailyCalories)
-          }
-        })
-        .catch(err => console.error("Error fetching target calories:", err))
+  const handleWorkoutFinish = async (workoutSummary: any) => {
+    if (!currentUserEmail) {
+      console.error("User email not available. Cannot log workout.");
+      
+      return;
     }
-  }, [])
 
-  useEffect(() => {
-    const timer = setTimeout(async () => {
-      const storedUser = localStorage.getItem("user")
-      let email = ""
-      if (storedUser) {
-        email = JSON.parse(storedUser).email
-      }
-      const today = new Date().toISOString().split("T")[0]
-      const dailyRecord = {
-        date: today,
-        dailyCalories: calorieAmount,
-        caloriesBurned: 0
-      }
-      await fetch("/api/dashboard", {
+   
+    console.log("Workout finished, summary:", workoutSummary);
+
+    try {
+      const response = await fetch("/api/dashboard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "daily", email, dailyRecord })
-      })
-    }, 5000)
-    return () => clearTimeout(timer)
-  }, [calorieAmount])
-
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      const storedUser = localStorage.getItem("user")
-      let email = ""
-      if (storedUser) {
-        email = JSON.parse(storedUser).email
+        body: JSON.stringify({
+          type: "logWorkout",
+          email: currentUserEmail,
+          workoutSummary: workoutSummary, 
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to log workout");
       }
-      if (email) { // Only update if user is logged in
-        await fetch("/api/dashboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type: "profile",
-            email,
-            profileData: {
-              progress,
-              dailyCalories: calorieAmount,
-              caloriesBurned,
-              recentWorkout,
-            },
-          }),
-        })
-      }
-    }, 10000)
-    return () => clearInterval(interval)
-  }, []) // Use an empty dependency array so the effect runs continuously
+      console.log("Workout logged successfully:", result.message);
+ 
 
-  // Updated handleWorkoutFinish to send and store recent workout data
-  const handleWorkoutFinish = async (workoutSummary) => {
-    const storedUser = localStorage.getItem("user")
-    let email = ""
-    if (storedUser) {
-      email = JSON.parse(storedUser).email
+    } catch (error) {
+      console.error("Error logging workout:", error);
+  
     }
-    // Send workout summary to update dashboard profile
-    await fetch("/api/dashboard", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        type: "profile",
-        email,
-        profileData: {
-          dailyCalories: calorieAmount,
-          recentWorkout: JSON.stringify(workoutSummary),
-        },
-      }),
-    })
-    // Update local recentWorkout state (optional, for immediate UI use)
-    setRecentWorkout(JSON.stringify(workoutSummary))
-  }
-
-  // Add new effect to fetch user profile data including weight and recent workout
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user")
-    if (storedUser) {
-      const email = JSON.parse(storedUser).email
-      fetch(`/api/dashboard?email=${email}`)
-        .then(res => res.json())
-        .then(data => {
-          if(data.profile) {
-            if(data.profile.weight) {
-              setUserWeight(data.profile.weight)
-            }
-            if(data.profile.recentWorkout) {
-              setRecentWorkout(data.profile.recentWorkout)
-            }
-            if(data.profile.caloriesBurned) {
-              setCaloriesBurned(data.profile.caloriesBurned)
-            }
-          }
-        })
-        .catch(err => console.error("Error fetching user profile:", err))
-    }
-  }, [])
+  };
 
   if (!mounted) {
     return null
@@ -160,8 +92,7 @@ export default function Tools() {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white p-4 sm:p-8 transition-colors duration-200">
       <div className="max-w-4xl mx-auto">
-        {/* New display for user weight */}
-        {userWeight && (
+        {userWeight !== null && (
           <div className="mb-4 text-center text-lg font-medium">
             Your Weight: {userWeight} kg
           </div>
@@ -200,23 +131,23 @@ export default function Tools() {
             className="bg-white dark:bg-black rounded-2xl p-6 shadow-[0_0_15px_rgba(0,0,0,0.1)] dark:shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-gray-200 dark:border-gray-800"
           >
             {activeTool === "Food Calorie Tracker" && (
-              <FoodCalorieTracker calorieAmount={calorieAmount} setCalorieAmount={setCalorieAmount} />
+              <FoodCalorieTracker 
+                calorieAmount={dailyCalorieTarget} 
+                setCalorieAmount={setDailyCalorieTarget} 
+              />
             )}
             {activeTool === "Exercise Calculator" && (
-              // Pass the weight prop here if needed; assumed to come from user profile elsewhere.
               <ExerciseCalculator
-                calorieAmount={calorieAmount}
-                setCalorieAmount={setCalorieAmount}
+                calorieAmount={dailyCalorieTarget}
+                setCalorieAmount={setDailyCalorieTarget}
                 onWorkoutFinish={handleWorkoutFinish}
-                // weight prop should be provided from a higher-level state or passed via user profile; 
-                // for demonstration, using a fixed value (e.g., 70 kg)
-                weight={userWeight ? Number(userWeight) : 70} // use fetched weight; fallback to 70 if not available
+                weight={userWeight !== null ? userWeight : 70}
               />
             )}
             {activeTool === "Balanced Workout" && (
               <BalancedWorkoutRoutine
-                calorieAmount={calorieAmount}
-                setCalorieAmount={setCalorieAmount}
+                calorieAmount={dailyCalorieTarget}
+                setCalorieAmount={setDailyCalorieTarget}
                 onWorkoutFinish={handleWorkoutFinish}
               />
             )}

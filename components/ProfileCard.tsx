@@ -76,13 +76,13 @@ export default function ProfileCard({ userData, isEditing, handleInputChange, ha
             {isEditing ? (
               <input
                 type="number"
-                name="weight"  // changed from "Weight" to "weight"
-                value={userData.weight}  // changed from userData.Weight
+                name="weight"
+                value={userData.weight}
                 onChange={handleInputChange}
                 className="w-full bg-transparent border-b border-white/20 focus:border-white/50 outline-none"
               />
             ) : (
-              <span className="text-sm">{userData.weight} kg</span>  // changed from userData.Weight
+              <span className="text-sm">{userData.weight} kg</span>  
             )}
           </div>
 
